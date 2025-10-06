@@ -1,19 +1,19 @@
 """
-Ventana principal de la aplicación Northwind
+Ventana principal de la aplicación AgroControl
 """
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-from views.cultivos_view import CultivosView
-from views.fincas_view import FincasView
+from views.hoteles_view import HotelesView
+from views.clientes_view import ClientesView
 from views.parcelas_view import ParcelasView
-from controllers.cultivos_controller import CultivosController
-from controllers.fincas_controller import FincasController
+from controllers.hoteles_controller import HotelesController
+from controllers.clientes_controller import ClientesController
 from controllers.parcelas_controller import ParcelasController
-from models.cultivos import Cultivos
-from models.fincas import Fincas
+from models.hoteles import Hoteles
+from models.clientes import Clientes
 from models.parcelas import Parcelas
-from utils.helpers import UIHelpers, ThemeManager  # ✅ Añadir ThemeManager
+from utils.helpers import UIHelpers, ThemeManager
 import os
 import sys
 
@@ -78,6 +78,7 @@ class MainWindow:
         # Lista de posibles ubicaciones del favicon
         favicon_paths = [
             os.path.join(current_dir, "favicon.ico"),
+            os.path.join(current_dir, "views", "favicon.ico"),
             os.path.join(current_dir, "../favicon.ico"),
             os.path.join(current_dir, "../../favicon.ico"),
             os.path.join(os.getcwd(), "favicon.ico"),
@@ -111,6 +112,7 @@ class MainWindow:
             # Intentar método alternativo con PhotoImage para PNG
             png_paths = [
                 os.path.join(current_dir, "favicon.png"),
+                os.path.join(current_dir, "views", "favicon.png"),
                 os.path.join(current_dir, "../favicon.png"),
                 os.path.join(os.getcwd(), "favicon.png"),
                 "favicon.png"
@@ -148,14 +150,14 @@ class MainWindow:
 
     def _create_models(self):
         """Crea las instancias de los modelos"""
-        self.cultivos_model = Cultivos(self.db)
-        self.fincas_model = Fincas(self.db)
+        self.hotels_model = Hoteles(self.db)
+        self.clients_model = Clientes(self.db)
         self.parcelas_model = Parcelas(self.db)
 
     def _create_controllers(self):
         """Crea las instancias de los controladores"""
-        self.cultivos_controller = CultivosController(self.cultivos_model)
-        self.fincas_controller = FincasController(self.fincas_model)
+        self.hotels_controller = HotelesController(self.hotels_model)
+        self.clients_controller = ClientesController(self.clients_model)
         self.parcelas_controller = ParcelasController(self.parcelas_model)
 
     def _create_interface(self):
@@ -171,7 +173,7 @@ class MainWindow:
 
         self.title_label = tk.Label(
             self.title_frame,
-            text="Sistema de Gestión agrocontrol sas",
+            text="Sistema de Gestión AgroControl SAS",
             font=("Arial", 18, "bold"),
             fg="white",
             bg='#2c3e50'
@@ -183,7 +185,7 @@ class MainWindow:
         self.subtitle_frame.pack(fill="x", padx=0, pady=0)
         self.subtitle_frame.pack_propagate(False)
 
-        connection_status = "Conectado" if self.db.is_connected() else "Desconectado"
+        connection_status = "Conectado" if self.db and hasattr(self.db, 'is_connected') and self.db.is_connected() else "Desconectado"
         self.subtitle_label = tk.Label(
             self.subtitle_frame,
             text=f"Base de Datos: {connection_status} | Usuario: root | DB: agrocontrol_sas_db",
@@ -205,23 +207,23 @@ class MainWindow:
 
     def _create_tabs(self):
         """Crea las pestañas y sus contenidos"""
-        # Pestaña de Cultivos
-        self.cultivos_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.cultivos_frame, text="🌿 Cultivos")
-        self.cultivos_view = CultivosView(self.cultivos_frame, self.cultivos_controller)
-        self.views['cultivos'] = self.cultivos_view  # ✅ Guardar referencia
+        # Pestaña de Hoteles
+        self.hotels_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.hotels_frame, text="🏨 Hoteles")
+        self.hotels_view = HotelesView(self.hotels_frame, self.hotels_controller)
+        self.views['hotels'] = self.hotels_view
 
-        # Pestaña de Fincas
-        self.fincas_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.fincas_frame, text="🏡 Fincas")
-        self.fincas_view = FincasView(self.fincas_frame, self.fincas_controller)
-        self.views['fincas'] = self.fincas_view  # ✅ Guardar referencia
+        # Pestaña de Clientes
+        self.clients_frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.clients_frame, text="👥 Clientes")
+        self.clients_view = ClientesView(self.clients_frame, self.clients_controller)
+        self.views['clients'] = self.clients_view
 
         # Pestaña de Parcelas
         self.parcelas_frame = ttk.Frame(self.notebook)
         self.notebook.add(self.parcelas_frame, text="🌾 Parcelas")
         self.parcelas_view = ParcelasView(self.parcelas_frame, self.parcelas_controller)
-        self.views['parcelas'] = self.parcelas_view  # ✅ Guardar referencia
+        self.views['parcelas'] = self.parcelas_view
 
         # Configurar evento de cambio de pestaña
         self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
@@ -234,7 +236,7 @@ class MainWindow:
 
         self.status_label = tk.Label(
             self.status_frame,
-            text="Sistema listo | Northwind Database Management System",
+            text="Sistema listo | AgroControl Database Management System",
             font=("Arial", 9),
             fg="white",
             bg='#34495e'
@@ -262,10 +264,10 @@ class MainWindow:
                 print(f"Cambiando a pestaña: {tab_text}")
 
                 # Actualizar datos cuando se cambia de pestaña
-                if hasattr(self, 'cultivos_view') and tab_text == "🌿 Cultivos":
-                    self.cultivos_view._refresh_list()
-                elif hasattr(self, 'fincas_view') and tab_text == "🏡 Fincas":
-                    self.fincas_view._refresh_list()
+                if hasattr(self, 'hotels_view') and tab_text == "🏨 Hoteles":
+                    self.hotels_view._refresh_list()
+                elif hasattr(self, 'clients_view') and tab_text == "👥 Clientes":
+                    self.clients_view._refresh_list()
                 elif hasattr(self, 'parcelas_view') and tab_text == "🌾 Parcelas":
                     self.parcelas_view._refresh_list()
 
@@ -278,13 +280,13 @@ class MainWindow:
             print("🔄 Cargando datos iniciales...")
 
             # Actualizar todas las listas inicialmente
-            if hasattr(self, 'cultivos_view'):
-                print("🌿 Cargando cultivos...")
-                self.cultivos_view._refresh_list()
+            if hasattr(self, 'hotels_view'):
+                print("🏨 Cargando hoteles...")
+                self.hotels_view._refresh_list()
 
-            if hasattr(self, 'fincas_view'):
-                print("🏡 Cargando fincas...")
-                self.fincas_view._refresh_list()
+            if hasattr(self, 'clients_view'):
+                print("👥 Cargando clientes...")
+                self.clients_view._refresh_list()
 
             if hasattr(self, 'parcelas_view'):
                 print("🌾 Cargando parcelas...")
@@ -323,5 +325,6 @@ class MainWindow:
         pass
 
     def _on_closing(self):
+        """Maneja el cierre de la aplicación"""
         if messagebox.askokcancel("Salir", "¿Quieres salir de la aplicación?"):
             self.root.destroy()

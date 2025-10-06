@@ -14,7 +14,7 @@ class DatabaseConnection:
         self.cursor = None
         self.config = {
             'host': 'localhost',
-            'database': 'agrocontrol_sas_db',
+            'database': 'hoteel',
             'user': 'root',
             'password': '',
             'autocommit': False,

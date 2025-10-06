@@ -1,5 +1,5 @@
 """
-Vista específica para la gestión de cultivos
+Vista específica para la gestión de hoteles
 """
 import tkinter as tk
 from tkinter import ttk
@@ -20,82 +20,60 @@ from openpyxl.utils import get_column_letter
 from utils.exceptions import EntityNotFoundError, EntityInUseError
 
 
-class CultivosView(BaseView):
+class HotelesView(BaseView):
+    """Vista específica para hoteles"""
 
     def __init__(self, parent_frame, controller):
-        self.form_title = "GESTIÓN DE CULTIVOS"
-        self.entity_name = "CULTIVOS"
-        self.imagen_miniatura = None
-        self.label_imagen = None
+        self.form_title = "GESTIÓN DE HOTELES"
+        self.entity_name = "HOTELES"
         self.dark_theme = True
         super().__init__(parent_frame, controller)
 
     def _create_form_fields(self):
+        """Crea los campos específicos del formulario de hoteles"""
+        # Campo ID_HOTEL
+        self.create_form_field(0, "ID_HOTEL:", "id_hotel")
 
+        # Campo NOMBRE_HOTEL
+        self.create_form_field(1, "NOMBRE_HOTEL:", "nombre_hotel")
 
-        self.create_form_field(0, "ID_CULTIVO:", "id_cultivo")
+        # Campo CATEGORIA
+        self.create_form_field(2, "CATEGORIA:", "categoria")
 
+        # Campo DIRECCION
+        self.create_form_field(3, "DIRECCION:", "direccion")
 
-        self.create_form_field(1, "NOMBRE_CIENTIFICO:", "nombre_cientifico")
+        # Campo TELEFONO
+        self.create_form_field(4, "TELEFONO:", "telefono")
 
+        # Campo CORREO
+        self.create_form_field(5, "CORREO:", "correo")
 
-        self.create_form_field(2, "NOMBRE_COMUN:", "nombre_comun")
+        # Campo AÑO_INAUGURACION
+        self.create_form_field(6, "AÑO_INAUGURACION:", "año_inauguracion")
 
+        # Campo HABITANTES
+        self.create_form_field(7, "HABITANTES:", "habitantes")
 
-        self.create_form_field(3, "TIEMPO_CRECIMIENTO (días):", "tiempo_crecimiento")
+        # Campo SERVICIOS
+        self.create_form_field(8, "SERVICIOS:", "servicios")
 
-        self.create_form_field(4, "TEMPERATURAS_OPTIMAS:", "temperaturas_optimas")
+        # Campo CHECKIN
+        self.create_form_field(9, "CHECK-IN HORARIOS:", "checkin")
 
-        self.create_form_field(5, "REQUERIMIENTO_AGUA:", "requerimiento_agua")
+        # Campo CHECKOUT
+        self.create_form_field(10, "CHECK-OUT HORARIOS:", "checkout")
 
-        self._create_photo_field()
-
-    def _create_photo_field(self):
-
-
-        photo_label = tk.Label(
-            self.form_frame,
-            text="PHOTO:",
-            font=("Arial", 12)
-        )
-        photo_label.grid(row=6, column=0, sticky="w", padx=(0, 10), pady=8)
-
-        self.photo_entry = tk.Entry(
-            self.form_frame,
-            width=25,
-            font=("Arial", 12),
-            relief="solid",
-            bd=1
-        )
-        self.photo_entry.grid(row=6, column=1, sticky="w", pady=8)
-
-
-        self.select_photo_btn = tk.Button(
-            self.form_frame,
-            text="Seleccionar Foto",
-            font=("Arial", 10),
-            bg="#2196F3",
-            fg="white",
-            command=self._on_select_photo
-        )
-        self.select_photo_btn.grid(row=6, column=2, padx=5, pady=8, sticky="w")
-
-        self.label_imagen = tk.Label(
-            self.form_frame,
-            text="Sin imagen",
-            font=("Arial", 10),
-            fg="gray"
-        )
-        self.label_imagen.grid(row=7, column=1, columnspan=2, pady=10)
-
-
-        self.form_fields['photo'] = self.photo_entry
+        # Campo GERENTE
+        self.create_form_field(11, "GERENTE:", "gerente")
 
     def _create_buttons(self):
-
+        """Crea los botones de acción - Sobrescribe el método de BaseView"""
+        # Frame para botones principales
         main_button_frame = tk.Frame(self.button_frame)
         main_button_frame.pack(pady=10)
 
+        # Botón Guardar (Crear nuevo)
         btn_save = tk.Button(
             main_button_frame,
             text="Guardar",
@@ -107,7 +85,7 @@ class CultivosView(BaseView):
         )
         btn_save.pack(side=tk.LEFT, padx=3)
 
-
+        # Botón Actualizar
         btn_update = tk.Button(
             main_button_frame,
             text="Actualizar",
@@ -119,6 +97,7 @@ class CultivosView(BaseView):
         )
         btn_update.pack(side=tk.LEFT, padx=3)
 
+        # Botón Eliminar
         btn_delete = tk.Button(
             main_button_frame,
             text="Eliminar",
@@ -130,7 +109,7 @@ class CultivosView(BaseView):
         )
         btn_delete.pack(side=tk.LEFT, padx=3)
 
-
+        # Botón Limpiar
         btn_clear = tk.Button(
             main_button_frame,
             text="Limpiar",
@@ -142,9 +121,11 @@ class CultivosView(BaseView):
         )
         btn_clear.pack(side=tk.LEFT, padx=3)
 
+        # Frame para búsqueda
         search_frame = tk.Frame(self.button_frame)
         search_frame.pack(pady=5)
 
+        # Botón Buscar
         btn_search = tk.Button(
             search_frame,
             text="Buscar por ID",
@@ -156,13 +137,16 @@ class CultivosView(BaseView):
         )
         btn_search.pack(side=tk.LEFT, padx=3)
 
+        # Luego añadir los botones adicionales
         self._create_additional_buttons()
 
     def _create_additional_buttons(self):
-
+        """Crea botones adicionales específicos para hoteles"""
+        # Frame para botones adicionales
         additional_button_frame = tk.Frame(self.button_frame)
         additional_button_frame.pack(pady=10)
 
+        # Botón Exportar Excel
         btn_export_excel = tk.Button(
             additional_button_frame,
             text="Exportar Excel",
@@ -174,6 +158,7 @@ class CultivosView(BaseView):
         )
         btn_export_excel.pack(side=tk.LEFT, padx=3)
 
+        # Botón Exportar PDF
         btn_export_pdf = tk.Button(
             additional_button_frame,
             text="Exportar PDF",
@@ -185,6 +170,7 @@ class CultivosView(BaseView):
         )
         btn_export_pdf.pack(side=tk.LEFT, padx=3)
 
+        # Botón Cambiar Tema
         btn_change_theme = tk.Button(
             additional_button_frame,
             text="Cambiar Tema",
@@ -197,14 +183,17 @@ class CultivosView(BaseView):
         btn_change_theme.pack(side=tk.LEFT, padx=3)
 
     def _create_treeview(self, parent):
-
+        """Crea el TreeView específico para hoteles"""
+        # Frame para TreeView y scrollbar
         tree_frame = tk.Frame(parent)
         tree_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        columns = ('ID_CULTIVO', 'NOMBRE_CIENTIFICO', 'NOMBRE_COMUN',
-                   'TIEMPO_CRECIMIENTO_DIAS', 'TEMPERATURAS_OPTIMAS',
-                   'REQUERIMIENTO_AGUA_SEMANAL', 'PHOTO')
+        # Definir columnas
+        columns = ('ID_HOTEL', 'NOMBRE_HOTEL', 'CATEGORIA', 'DIRECCION',
+                  'TELEFONO', 'CORREO', 'AÑO_INAUGURACION', 'HABITANTES',
+                  'SERVICIOS', 'CHECKIN', 'CHECKOUT', 'GERENTE')
 
+        # Crear TreeView
         self.tree = ttk.Treeview(
             tree_frame,
             columns=columns,
@@ -212,39 +201,50 @@ class CultivosView(BaseView):
             height=20
         )
 
+        # Configurar encabezados
+        self.tree.heading('ID_HOTEL', text='ID')
+        self.tree.heading('NOMBRE_HOTEL', text='NOMBRE')
+        self.tree.heading('CATEGORIA', text='CATEGORÍA')
+        self.tree.heading('DIRECCION', text='DIRECCIÓN')
+        self.tree.heading('TELEFONO', text='TELÉFONO')
+        self.tree.heading('CORREO', text='CORREO')
+        self.tree.heading('AÑO_INAUGURACION', text='INAUGURACIÓN')
+        self.tree.heading('HABITANTES', text='HABITANTES')
+        self.tree.heading('SERVICIOS', text='SERVICIOS')
+        self.tree.heading('CHECKIN', text='CHECK-IN')
+        self.tree.heading('CHECKOUT', text='CHECK-OUT')
+        self.tree.heading('GERENTE', text='GERENTE')
 
-        self.tree.heading('ID_CULTIVO', text='ID')
-        self.tree.heading('NOMBRE_CIENTIFICO', text='NOMBRE_CIENTIFICO')
-        self.tree.heading('NOMBRE_COMUN', text='NOMBRE')
-        self.tree.heading('TIEMPO_CRECIMIENTO_DIAS', text='TIEMPO_CRECIMIENTO')
-        self.tree.heading('TEMPERATURAS_OPTIMAS', text='TEMP_OPTIMA')
-        self.tree.heading('REQUERIMIENTO_AGUA_SEMANAL', text='REQUERIMIENTO_AGUA')
-        self.tree.heading('PHOTO', text='PHOTO')
+        # Configurar anchos de columnas
+        self.tree.column('ID_HOTEL', width=50, anchor='center')
+        self.tree.column('NOMBRE_HOTEL', width=120, anchor='w')
+        self.tree.column('CATEGORIA', width=80, anchor='center')
+        self.tree.column('DIRECCION', width=120, anchor='w')
+        self.tree.column('TELEFONO', width=100, anchor='center')
+        self.tree.column('CORREO', width=120, anchor='w')
+        self.tree.column('AÑO_INAUGURACION', width=100, anchor='center')
+        self.tree.column('HABITANTES', width=80, anchor='center')
+        self.tree.column('SERVICIOS', width=120, anchor='w')
+        self.tree.column('CHECKIN', width=80, anchor='center')
+        self.tree.column('CHECKOUT', width=80, anchor='center')
+        self.tree.column('GERENTE', width=100, anchor='w')
 
-        self.tree.column('ID_CULTIVO', width=50, anchor='center')
-        self.tree.column('NOMBRE_CIENTIFICO', width=90, anchor='w')
-        self.tree.column('NOMBRE_COMUN', width=80, anchor='w')
-        self.tree.column('TIEMPO_CRECIMIENTO_DIAS', width=80, anchor='center')
-        self.tree.column('TEMPERATURAS_OPTIMAS', width=100, anchor='center')
-        self.tree.column('REQUERIMIENTO_AGUA_SEMANAL', width=80, anchor='center')
-        self.tree.column('PHOTO', width=70, anchor='center')
-
-
+        # Configurar estilos iniciales
         self._configure_treeview_styles()
 
-
+        # Scrollbar
         scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
 
-
+        # Layout
         self.tree.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-
+        # Evento de selección - ¡ESTO ES CLAVE!
         self.tree.bind('<<TreeviewSelect>>', self._on_tree_select)
 
     def _on_tree_select(self, event):
-
+        """Maneja la selección de un item en el treeview"""
         try:
             selected_items = self.tree.selection()
             if not selected_items:
@@ -253,28 +253,34 @@ class CultivosView(BaseView):
             selected_item = selected_items[0]
             values = self.tree.item(selected_item, 'values')
 
-            if values and len(values) >= 7:
+            if values and len(values) >= 12:
                 data = {
-                    'ID_CULTIVO': values[0],
-                    'NOMBRE_CIENTIFICO': values[1],
-                    'NOMBRE_COMUN': values[2],
-                    'TIEMPO_CRECIMIENTO_DIAS': values[3],
-                    'TEMPERATURAS_OPTIMAS': values[4],
-                    'REQUERIMIENTO_AGUA_SEMANAL': values[5],
-                    'PHOTO': values[6]
+                    'ID_HOTEL': values[0],
+                    'NOMBRE_HOTEL': values[1],
+                    'CATEGORIA': values[2],
+                    'DIRECCION': values[3],
+                    'TELEFONO': values[4],
+                    'CORREO': values[5],
+                    'AÑO_INAUGURACION': values[6],
+                    'HABITANTES': values[7],
+                    'SERVICIOS': values[8],
+                    'CHECKIN': values[9],
+                    'CHECKOUT': values[10],
+                    'GERENTE': values[11]
                 }
+                print(f"Datos seleccionados del treeview: {data}")
                 self._populate_form(data)
 
         except Exception as e:
             print(f"Error en selección de treeview: {e}")
 
     def _configure_treeview_styles(self, bg_color=None, fg_color=None, heading_bg=None, odd_bg=None, even_bg=None):
-
+        """Configura los estilos del TreeView"""
         try:
             style = ttk.Style()
             style.theme_use("default")
 
-
+            # Usar valores por defecto si no se proporcionan
             if bg_color is None:
                 bg_color = "#2b2b2b" if self.dark_theme else "white"
             if fg_color is None:
@@ -286,7 +292,7 @@ class CultivosView(BaseView):
             if even_bg is None:
                 even_bg = "#2e2e2e" if self.dark_theme else "#e9e9e9"
 
-
+            # Configurar TreeView
             style.configure("Treeview",
                             background=bg_color,
                             foreground=fg_color,
@@ -294,11 +300,13 @@ class CultivosView(BaseView):
                             fieldbackground=bg_color,
                             font=('Arial', 11))
 
+            # Configurar encabezados
             style.configure("Treeview.Heading",
                             background=heading_bg,
                             foreground="white",
                             font=('Arial', 12, 'bold'))
 
+            # Colores alternados para filas
             self.tree.tag_configure('oddrow', background=odd_bg)
             self.tree.tag_configure('evenrow', background=even_bg)
 
@@ -306,41 +314,48 @@ class CultivosView(BaseView):
             print(f"Error configurando estilos: {e}")
 
     def _get_form_data(self):
-
+        """Obtiene los datos del formulario de hoteles"""
         form_data = {
-            'ID_CULTIVO': self.get_field_value('id_cultivo'),
-            'NOMBRE_CIENTIFICO': self.get_field_value('nombre_cientifico'),
-            'NOMBRE_COMUN': self.get_field_value('nombre_comun'),
-            'TIEMPO_CRECIMIENTO_DIAS': self.get_field_value('tiempo_crecimiento'),
-            'TEMPERATURAS_OPTIMAS': self.get_field_value('temperaturas_optimas'),
-            'REQUERIMIENTO_AGUA_SEMANAL': self.get_field_value('requerimiento_agua'),
-            'PHOTO': self.get_field_value('photo')
+            'ID_HOTEL': self.get_field_value('id_hotel'),
+            'NOMBRE_HOTEL': self.get_field_value('nombre_hotel'),
+            'CATEGORIA': self.get_field_value('categoria'),
+            'DIRECCION': self.get_field_value('direccion'),
+            'TELEFONO': self.get_field_value('telefono'),
+            'CORREO': self.get_field_value('correo'),
+            'AÑO_INAUGURACION': self.get_field_value('año_inauguracion'),
+            'HABITANTES': self.get_field_value('habitantes'),
+            'SERVICIOS': self.get_field_value('servicios'),
+            'CHECKIN': self.get_field_value('checkin'),
+            'CHECKOUT': self.get_field_value('checkout'),
+            'GERENTE': self.get_field_value('gerente')
         }
         print(f"Datos obtenidos del formulario: {form_data}")
         return form_data
 
     def _populate_form(self, data):
-
+        """Puebla el formulario con datos de un hotel"""
         try:
             if not data:
                 return
 
             print(f"Poblando formulario con datos: {data}")
 
+            # Limpiar formulario primero
             self._clear_form()
 
-            self.set_field_value('id_cultivo', data.get('ID_CULTIVO', ''))
-            self.set_field_value('nombre_cientifico', data.get('NOMBRE_CIENTIFICO', ''))
-            self.set_field_value('nombre_comun', data.get('NOMBRE_COMUN', ''))
-            self.set_field_value('tiempo_crecimiento', data.get('TIEMPO_CRECIMIENTO_DIAS', ''))
-            self.set_field_value('temperaturas_optimas', data.get('TEMPERATURAS_OPTIMAS', ''))
-            self.set_field_value('requerimiento_agua', data.get('REQUERIMIENTO_AGUA_SEMANAL', ''))
-            self.set_field_value('photo', data.get('PHOTO', ''))
-
-            if data.get('PHOTO'):
-                self.label_imagen.config(text=f"Imagen: {data.get('PHOTO', '').split('/')[-1]}")
-            else:
-                self.label_imagen.config(text="Sin imagen")
+            # Poblar campos con los datos
+            self.set_field_value('id_hotel', data.get('ID_HOTEL', ''))
+            self.set_field_value('nombre_hotel', data.get('NOMBRE_HOTEL', ''))
+            self.set_field_value('categoria', data.get('CATEGORIA', ''))
+            self.set_field_value('direccion', data.get('DIRECCION', ''))
+            self.set_field_value('telefono', data.get('TELEFONO', ''))
+            self.set_field_value('correo', data.get('CORREO', ''))
+            self.set_field_value('año_inauguracion', data.get('AÑO_INAUGURACION', ''))
+            self.set_field_value('habitantes', data.get('HABITANTES', ''))
+            self.set_field_value('servicios', data.get('SERVICIOS', ''))
+            self.set_field_value('checkin', data.get('CHECKIN', ''))
+            self.set_field_value('checkout', data.get('CHECKOUT', ''))
+            self.set_field_value('gerente', data.get('GERENTE', ''))
 
             print("Formulario poblado exitosamente")
 
@@ -348,33 +363,39 @@ class CultivosView(BaseView):
             print(f"Error poblando formulario: {e}")
 
     def _get_entity_id_from_form(self):
-
-        cultivo_id = self.get_field_value('id_cultivo')
+        """Obtiene el ID del hotel desde el formulario"""
+        hotel_id = self.get_field_value('id_hotel')
         try:
-            return int(cultivo_id) if cultivo_id and cultivo_id.strip() else None
+            return int(hotel_id) if hotel_id and hotel_id.strip() else None
         except ValueError:
             return None
 
     def _refresh_list(self):
-
+        """Actualiza la lista de hoteles con colores alternados"""
         try:
-
+            # Limpiar TreeView completamente
             for item in self.tree.get_children():
                 self.tree.delete(item)
 
-            cultivos = self.controller.get_all()
-            print(f"Refrescando lista con {len(cultivos)} cultivos")
+            # Obtener datos actualizados del controlador
+            hoteles = self.controller.get_all()
+            print(f"Refrescando lista con {len(hoteles)} hoteles")
 
-
-            for index, cultivo in enumerate(cultivos):
+            # Insertar datos actualizados
+            for index, hotel in enumerate(hoteles):
                 values = (
-                    safe_str(cultivo.get('ID_CULTIVO', '')),
-                    safe_str(cultivo.get('NOMBRE_CIENTIFICO', '')),
-                    safe_str(cultivo.get('NOMBRE_COMUN', '')),
-                    safe_str(cultivo.get('TIEMPO_CRECIMIENTO_DIAS', '')),
-                    safe_str(cultivo.get('TEMPERATURAS_OPTIMAS', '')),
-                    safe_str(cultivo.get('REQUERIMIENTO_AGUA_SEMANAL', '')),
-                    safe_str(cultivo.get('PHOTO', ''))
+                    safe_str(hotel.get('ID_HOTEL', '')),
+                    safe_str(hotel.get('NOMBRE_HOTEL', '')),
+                    safe_str(hotel.get('CATEGORIA', '')),
+                    safe_str(hotel.get('DIRECCION', '')),
+                    safe_str(hotel.get('TELEFONO', '')),
+                    safe_str(hotel.get('CORREO', '')),
+                    safe_str(hotel.get('AÑO_INAUGURACION', '')),
+                    safe_str(hotel.get('HABITANTES', '')),
+                    safe_str(hotel.get('SERVICIOS', '')),
+                    safe_str(hotel.get('CHECKIN', '')),
+                    safe_str(hotel.get('CHECKOUT', '')),
+                    safe_str(hotel.get('GERENTE', ''))
                 )
                 tag = 'evenrow' if index % 2 == 0 else 'oddrow'
                 self.tree.insert('', 'end', values=values, tags=(tag,))
@@ -387,196 +408,164 @@ class CultivosView(BaseView):
             traceback.print_exc()
 
     def _on_save(self):
-        """Maneja el guardado de cultivos"""
+        """Maneja el guardado de hoteles"""
         try:
             form_data = self._get_form_data()
             print("=== INICIANDO GUARDADO ===")
             print("Datos del formulario (GUARDAR):", form_data)
 
             # Validar campos obligatorios
-            if not form_data.get('NOMBRE_CIENTIFICO') or not form_data.get('NOMBRE_CIENTIFICO').strip():
-                messagebox.showerror("Error", "Debe ingresar el nombre científico")
+            if not form_data.get('NOMBRE_HOTEL') or not form_data.get('NOMBRE_HOTEL').strip():
+                messagebox.showerror("Error", "Debe ingresar el nombre del hotel")
                 return
 
-            if not form_data.get('NOMBRE_COMUN') or not form_data.get('NOMBRE_COMUN').strip():
-                messagebox.showerror("Error", "Debe ingresar el nombre común")
+            if not form_data.get('DIRECCION') or not form_data.get('DIRECCION').strip():
+                messagebox.showerror("Error", "Debe ingresar la dirección del hotel")
                 return
 
-            if not form_data.get('TIEMPO_CRECIMIENTO_DIAS') or not form_data.get('TIEMPO_CRECIMIENTO_DIAS').strip():
-                messagebox.showerror("Error", "Debe ingresar el tiempo de crecimiento (días)")
-                return
-
-            if not form_data.get('TEMPERATURAS_OPTIMAS') or not form_data.get('TEMPERATURAS_OPTIMAS').strip():
-                messagebox.showerror("Error", "Debe ingresar la temperatura óptima")
-                return
-
-            # Crear nuevo cultivo
-            print("Llamando a controller.create...")  # DEBUG
+            # Crear nuevo hotel
+            print("Llamando a controller.create...")
             new_id = self.controller.create(form_data)
 
             if new_id:
-                messagebox.showinfo("Éxito", f"Cultivo guardado correctamente con ID: {new_id}")
+                messagebox.showinfo("Éxito", f"Hotel guardado correctamente con ID: {new_id}")
                 self._clear_form()
                 self._refresh_list()
             else:
-                messagebox.showerror("Error", "Error al guardar cultivo - No se retornó ID")
+                messagebox.showerror("Error", "Error al guardar hotel - No se retornó ID")
 
         except ValueError as ve:
             messagebox.showerror("Error de validación", str(ve))
         except Exception as e:
-            messagebox.showerror("Error", f"Error al guardar cultivo: {str(e)}")
-            print(f"ERROR DETALLADO en _on_save: {e}")  # DEBUG
+            messagebox.showerror("Error", f"Error al guardar hotel: {str(e)}")
+            print(f"ERROR DETALLADO en _on_save: {e}")
             import traceback
             traceback.print_exc()
 
     def _on_update(self):
-        """Maneja la actualización de cultivos"""
+        """Maneja la actualización de hoteles"""
         try:
-            cultivo_id = self._get_entity_id_from_form()
-            print("=== INICIANDO ACTUALIZACIÓN ===")  # DEBUG
-            print(f"ID para actualizar: {cultivo_id}")
+            hotel_id = self._get_entity_id_from_form()
+            print("=== INICIANDO ACTUALIZACIÓN ===")
+            print(f"ID para actualizar: {hotel_id}")
 
-            if not cultivo_id:
-                messagebox.showerror("Error", "Seleccione un cultivo para actualizar")
+            if not hotel_id:
+                messagebox.showerror("Error", "Seleccione un hotel para actualizar")
                 return
 
             form_data = self._get_form_data()
             print("Datos del formulario (ACTUALIZAR):", form_data)
 
             # Validar campos obligatorios
-            if not form_data.get('NOMBRE_CIENTIFICO') or not form_data.get('NOMBRE_CIENTIFICO').strip():
-                messagebox.showerror("Error", "Debe ingresar el nombre científico")
+            if not form_data.get('NOMBRE_HOTEL') or not form_data.get('NOMBRE_HOTEL').strip():
+                messagebox.showerror("Error", "Debe ingresar el nombre del hotel")
                 return
 
-            if not form_data.get('NOMBRE_COMUN') or not form_data.get('NOMBRE_COMUN').strip():
-                messagebox.showerror("Error", "Debe ingresar el nombre común")
-                return
-
-            if not form_data.get('TIEMPO_CRECIMIENTO_DIAS') or not form_data.get('TIEMPO_CRECIMIENTO_DIAS').strip():
-                messagebox.showerror("Error", "Debe ingresar el tiempo de crecimiento (días)")
-                return
-
-            if not form_data.get('TEMPERATURAS_OPTIMAS') or not form_data.get('TEMPERATURAS_OPTIMAS').strip():
-                messagebox.showerror("Error", "Debe ingresar la temperatura óptima")
+            if not form_data.get('DIRECCION') or not form_data.get('DIRECCION').strip():
+                messagebox.showerror("Error", "Debe ingresar la dirección del hotel")
                 return
 
             # Confirmación
-            confirmar = messagebox.askyesno("Confirmación", f"¿Desea actualizar el cultivo con ID {cultivo_id}?")
+            confirmar = messagebox.askyesno("Confirmación", f"¿Desea actualizar el hotel con ID {hotel_id}?")
             if not confirmar:
                 return
 
-            print("Llamando a controller.update...")  # DEBUG
-            # Actualizar cultivo
-            success = self.controller.update(cultivo_id, form_data)
+            print("Llamando a controller.update...")
+            # Actualizar hotel
+            success = self.controller.update(hotel_id, form_data)
 
             if success:
-                messagebox.showinfo("Éxito", f"Cultivo con ID {cultivo_id} actualizado correctamente")
+                messagebox.showinfo("Éxito", f"Hotel con ID {hotel_id} actualizado correctamente")
                 self._clear_form()
                 self._refresh_list()
             else:
-                messagebox.showerror("Error", "No se pudo actualizar el cultivo")
+                messagebox.showerror("Error", "No se pudo actualizar el hotel")
 
         except ValueError as ve:
             messagebox.showerror("Error de validación", str(ve))
         except Exception as e:
-            messagebox.showerror("Error", f"Error actualizando cultivo: {str(e)}")
-            print(f"ERROR DETALLADO en _on_update: {e}")  # DEBUG
+            messagebox.showerror("Error", f"Error actualizando hotel: {str(e)}")
+            print(f"ERROR DETALLADO en _on_update: {e}")
             import traceback
             traceback.print_exc()
 
     def _on_delete(self):
-        """Elimina un cultivo"""
+        """Elimina un hotel"""
         try:
-            cultivo_id = self._get_entity_id_from_form()
-            print("=== INICIANDO ELIMINACIÓN ===")  # DEBUG
-            print(f"ID para eliminar: {cultivo_id}")
+            hotel_id = self._get_entity_id_from_form()
+            print("=== INICIANDO ELIMINACIÓN ===")
+            print(f"ID para eliminar: {hotel_id}")
 
-            if not cultivo_id:
-                messagebox.showwarning("Advertencia", "Por favor, ingresa un ID de cultivo válido")
+            if not hotel_id:
+                messagebox.showwarning("Advertencia", "Seleccione un hotel para eliminar")
                 return
 
             # Confirmación
             respuesta = messagebox.askyesno("Confirmar eliminación",
-                                            f"¿Estás seguro de eliminar el cultivo con ID {cultivo_id}?")
+                                          f"¿Estás seguro de eliminar el hotel con ID {hotel_id}?")
             if not respuesta:
                 messagebox.showinfo("Cancelado", "Eliminación cancelada")
                 return
 
-            print("Llamando a controller.delete...")  # DEBUG
-            success = self.controller.delete(cultivo_id)
+            print("Llamando a controller.delete...")
+            success = self.controller.delete(hotel_id)
 
             if success:
-                messagebox.showinfo("Éxito", f"Cultivo con ID {cultivo_id} eliminado correctamente")
+                messagebox.showinfo("Éxito", f"Hotel con ID {hotel_id} eliminado correctamente")
                 self._clear_form()
                 self._refresh_list()
             else:
-                messagebox.showerror("Error", "No se pudo eliminar el cultivo")
+                messagebox.showerror("Error", "No se pudo eliminar el hotel")
 
         except EntityNotFoundError as e:
-            messagebox.showerror("No encontrado", f"No se encontró el cultivo con ID {cultivo_id}")
+            messagebox.showerror("No encontrado", f"No se encontró el hotel con ID {hotel_id}")
             self._clear_form()
             self._refresh_list()
         except EntityInUseError as e:
             messagebox.showerror(
                 "No se puede eliminar",
-                f"No se puede eliminar el cultivo porque {e.reason}"
+                f"No se puede eliminar el hotel porque {e.reason}"
             )
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo eliminar el cultivo: {str(e)}")
-            print(f"ERROR DETALLADO en _on_delete: {e}")  # DEBUG
+            messagebox.showerror("Error", f"No se pudo eliminar el hotel: {str(e)}")
+            print(f"ERROR DETALLADO en _on_delete: {e}")
             import traceback
             traceback.print_exc()
 
     def _on_search(self):
-        """Busca un cultivo por ID"""
-        cultivo_id = self.get_field_value('id_cultivo')
+        """Busca un hotel por ID"""
+        hotel_id = self.get_field_value('id_hotel')
 
         try:
-            print("=== INICIANDO BÚSQUEDA ===")  # DEBUG
-            print(f"ID a buscar: {cultivo_id}")
+            print("=== INICIANDO BÚSQUEDA ===")
+            print(f"ID a buscar: {hotel_id}")
 
-            if not cultivo_id or not cultivo_id.strip():
-                messagebox.showerror("Error", "Ingrese un ID de cultivo para buscar")
+            if not hotel_id or not hotel_id.strip():
+                messagebox.showerror("Error", "Ingrese un ID de hotel para buscar")
                 return
 
             # Validar que sea un número válido
-            entity_id = int(cultivo_id.strip())
+            entity_id = int(hotel_id.strip())
 
             if entity_id <= 0:
-                messagebox.showerror("Error", "El ID del cultivo debe ser un número positivo")
+                messagebox.showerror("Error", "El ID del hotel debe ser un número positivo")
                 return
 
-            print("Llamando a controller.get_by_id...")  # DEBUG
+            print("Llamando a controller.get_by_id...")
             # Llamar al controlador para buscar
             data = self.controller.get_by_id(entity_id)
 
             if data:
                 self._populate_form(data)
-                messagebox.showinfo("Éxito", "Cultivo encontrado y cargado en el formulario")
+                messagebox.showinfo("Éxito", "Hotel encontrado y cargado en el formulario")
             else:
-                messagebox.showerror("No encontrado", f"No se encontró ningún cultivo con ID: {entity_id}")
+                messagebox.showerror("No encontrado", f"No se encontró ningún hotel con ID: {entity_id}")
 
         except ValueError:
-            messagebox.showerror("Error", "El ID del cultivo debe ser un número válido")
+            messagebox.showerror("Error", "El ID del hotel debe ser un número válido")
         except Exception as e:
             messagebox.showerror("Error", f"Error en búsqueda: {str(e)}")
-            print(f"ERROR DETALLADO en _on_search: {e}")  # DEBUG
-
-    def _on_select_photo(self):
-        """Maneja la selección de foto"""
-        try:
-            file_path = filedialog.askopenfilename(
-                title="Seleccionar imagen",
-                filetypes=[("Image files", "*.jpg *.jpeg *.png *.gif *.bmp")]
-            )
-
-            if file_path:
-                self.photo_entry.delete(0, tk.END)
-                self.photo_entry.insert(0, file_path)
-                self.label_imagen.config(text=f"Imagen: {file_path.split('/')[-1]}")
-
-        except Exception as e:
-            messagebox.showerror("Error", f"Error seleccionando foto: {str(e)}")
+            print(f"ERROR DETALLADO en _on_search: {e}")
 
     def _change_theme(self):
         """Cambia el tema de la aplicación"""
@@ -667,8 +656,6 @@ class CultivosView(BaseView):
                     widget.configure(bg="#4CAF50", fg="white")
                 elif current_text == 'Exportar PDF':
                     widget.configure(bg="#2196F3", fg="white")
-                elif current_text == 'Seleccionar Foto':
-                    widget.configure(bg="#2196F3", fg="white")
                 else:
                     widget.configure(bg=button_bg, fg="white")
             elif isinstance(widget, tk.Frame):
@@ -677,10 +664,10 @@ class CultivosView(BaseView):
             pass
 
     def _export_excel(self):
-        """Exporta datos de cultivos a Excel con formato profesional"""
+        """Exporta datos de hoteles a Excel con formato profesional"""
         try:
-            cultivos = self.controller.get_all()
-            if not cultivos:
+            hoteles = self.controller.get_all()
+            if not hoteles:
                 messagebox.showerror("Error", "No hay datos para exportar")
                 return
 
@@ -697,7 +684,7 @@ class CultivosView(BaseView):
             # Crear libro de trabajo y hoja
             wb = Workbook()
             ws = wb.active
-            ws.title = "Cultivos"
+            ws.title = "Hoteles"
 
             # Estilos
             header_font = Font(name='Arial', size=12, bold=True, color='FFFFFF')
@@ -713,13 +700,13 @@ class CultivosView(BaseView):
             left_align = Alignment(horizontal='left', vertical='center')
 
             # Título
-            ws.merge_cells('A1:G1')
-            ws['A1'] = 'REPORTE DE CULTIVOS'
+            ws.merge_cells('A1:L1')
+            ws['A1'] = 'REPORTE DE HOTELES'
             ws['A1'].font = Font(name='Arial', size=14, bold=True)
             ws['A1'].alignment = center_align
 
             # Fecha
-            ws.merge_cells('A2:G2')
+            ws.merge_cells('A2:L2')
             ws['A2'] = f'Generado el: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}'
             ws['A2'].font = normal_font
             ws['A2'].alignment = center_align
@@ -729,75 +716,90 @@ class CultivosView(BaseView):
 
             # Encabezados de columnas
             headers = [
-                'ID CULTIVO',
-                'NOMBRE CIENTÍFICO',
-                'NOMBRE COMÚN',
-                'TIEMPO CRECIMIENTO (días)',
-                'TEMPERATURAS ÓPTIMAS',
-                'REQUERIMIENTO AGUA SEMANAL',
-                'RUTA FOTO'
+                'ID HOTEL',
+                'NOMBRE HOTEL',
+                'CATEGORÍA',
+                'DIRECCIÓN',
+                'TELÉFONO',
+                'CORREO',
+                'AÑO INAUGURACIÓN',
+                'NÚMERO HABITANTES',
+                'SERVICIOS DISPONIBLES',
+                'HORARIOS CHECK-IN',
+                'HORARIOS CHECK-OUT',
+                'GERENTE RESPONSABLE'
             ]
             ws.append(headers)
 
             # Aplicar estilo a los encabezados
-            for col in range(1, 8):  # Columnas A a G
+            for col in range(1, 13):  # Columnas A a L
                 cell = ws.cell(row=4, column=col)
                 cell.font = header_font
                 cell.fill = header_fill
                 cell.alignment = center_align
                 cell.border = border
 
-            # Datos de los cultivos
-            for cultivo in cultivos:
+            # Datos de los hoteles
+            for hotel in hoteles:
                 row = [
-                    safe_str(cultivo.get('ID_CULTIVO', '')),
-                    safe_str(cultivo.get('NOMBRE_CIENTIFICO', '')),
-                    safe_str(cultivo.get('NOMBRE_COMUN', '')),
-                    safe_str(cultivo.get('TIEMPO_CRECIMIENTO_DIAS', '')),
-                    safe_str(cultivo.get('TEMPERATURAS_OPTIMAS', '')),
-                    safe_str(cultivo.get('REQUERIMIENTO_AGUA_SEMANAL', '')),
-                    safe_str(cultivo.get('PHOTO', ''))
+                    safe_str(hotel.get('ID_HOTEL', '')),
+                    safe_str(hotel.get('NOMBRE_HOTEL', '')),
+                    safe_str(hotel.get('CATEGORIA', '')),
+                    safe_str(hotel.get('DIRECCION', '')),
+                    safe_str(hotel.get('TELEFONO', '')),
+                    safe_str(hotel.get('CORREO', '')),
+                    safe_str(hotel.get('AÑO_INAUGURACION', '')),
+                    safe_str(hotel.get('HABITANTES', '')),
+                    safe_str(hotel.get('SERVICIOS', '')),
+                    safe_str(hotel.get('CHECKIN', '')),
+                    safe_str(hotel.get('CHECKOUT', '')),
+                    safe_str(hotel.get('GERENTE', ''))
                 ]
                 ws.append(row)
 
             # Aplicar estilo a los datos
-            for row in range(5, len(cultivos) + 5):
+            for row in range(5, len(hoteles) + 5):
                 # Alternar colores de fila
                 if row % 2 == 1:
                     fill_color = PatternFill(start_color='F0F8FF', end_color='F0F8FF', fill_type='solid')
                 else:
                     fill_color = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')
 
-                for col in range(1, 8):
+                for col in range(1, 13):
                     cell = ws.cell(row=row, column=col)
                     cell.font = normal_font
                     cell.border = border
                     cell.fill = fill_color
 
                     # Alineación específica por columna
-                    if col in [1, 4]:  # ID y Tiempo Crecimiento - centrados
+                    if col in [1, 3, 7]:  # ID, Categoría, Habitantes - centrados
                         cell.alignment = center_align
                     else:  # Texto - alineado a la izquierda
                         cell.alignment = left_align
 
             # Ajustar anchos de columna
             column_widths = {
-                'A': 10,  # ID
-                'B': 25,  # Nombre Científico
-                'C': 20,  # Nombre Común
-                'D': 18,  # Tiempo Crecimiento
-                'E': 20,  # Temperaturas
-                'F': 22,  # Requerimiento Agua
-                'G': 30  # Ruta Foto
+                'A': 10,   # ID
+                'B': 25,   # Nombre Hotel
+                'C': 12,   # Categoría
+                'D': 30,   # Dirección
+                'E': 15,   # Teléfono
+                'F': 25,   # Correo
+                'G': 15,   # Año Inauguración
+                'H': 15,   # Habitantes
+                'I': 30,   # Servicios
+                'J': 15,   # Check-in
+                'K': 15,   # Check-out
+                'L': 20    # Gerente
             }
 
             for col_letter, width in column_widths.items():
                 ws.column_dimensions[col_letter].width = width
 
             # Resumen
-            summary_row = len(cultivos) + 6
-            ws.merge_cells(f'A{summary_row}:G{summary_row}')
-            ws[f'A{summary_row}'] = f'Total de cultivos registrados: {len(cultivos)}'
+            summary_row = len(hoteles) + 6
+            ws.merge_cells(f'A{summary_row}:L{summary_row}')
+            ws[f'A{summary_row}'] = f'Total de hoteles registrados: {len(hoteles)}'
             ws[f'A{summary_row}'].font = Font(name='Arial', size=11, bold=True)
             ws[f'A{summary_row}'].alignment = center_align
             ws[f'A{summary_row}'].fill = PatternFill(start_color='E6E6FA', end_color='E6E6FA', fill_type='solid')
@@ -811,10 +813,10 @@ class CultivosView(BaseView):
             messagebox.showerror("Error", f"Error exportando a Excel: {str(e)}")
 
     def _export_pdf(self):
-        """Exporta datos de cultivos a PDF"""
+        """Exporta datos de hoteles a PDF"""
         try:
-            cultivos = self.controller.get_all()
-            if not cultivos:
+            hoteles = self.controller.get_all()
+            if not hoteles:
                 messagebox.showerror("Error", "No hay datos para exportar")
                 return
 
@@ -853,7 +855,7 @@ class CultivosView(BaseView):
             elements = []
 
             # Título
-            title = Paragraph("REPORTE DE CULTIVOS", title_style)
+            title = Paragraph("REPORTE DE HOTELES", title_style)
             elements.append(title)
 
             # Fecha de generación
@@ -863,16 +865,17 @@ class CultivosView(BaseView):
 
             # Preparar datos para la tabla
             table_data = [
-                ['ID', 'Nombre Científico', 'Nombre Común', 'Tiempo Crecimiento', 'Temperaturas', 'Agua Semanal']]
+                ['ID', 'Nombre Hotel', 'Categoría', 'Dirección', 'Teléfono', 'Correo']
+            ]
 
-            for cultivo in cultivos:
+            for hotel in hoteles:
                 table_data.append([
-                    safe_str(cultivo.get('ID_CULTIVO', '')),
-                    safe_str(cultivo.get('NOMBRE_CIENTIFICO', '')),
-                    safe_str(cultivo.get('NOMBRE_COMUN', '')),
-                    safe_str(cultivo.get('TIEMPO_CRECIMIENTO_DIAS', '')),
-                    safe_str(cultivo.get('TEMPERATURAS_OPTIMAS', '')),
-                    safe_str(cultivo.get('REQUERIMIENTO_AGUA_SEMANAL', ''))
+                    safe_str(hotel.get('ID_HOTEL', '')),
+                    safe_str(hotel.get('NOMBRE_HOTEL', '')),
+                    safe_str(hotel.get('CATEGORIA', '')),
+                    safe_str(hotel.get('DIRECCION', '')),
+                    safe_str(hotel.get('TELEFONO', '')),
+                    safe_str(hotel.get('CORREO', ''))
                 ])
 
             # Crear tabla
@@ -912,8 +915,8 @@ class CultivosView(BaseView):
             elements.append(Spacer(1, 20))
 
             # Resumen
-            total_cultivos = len(cultivos)
-            resumen = Paragraph(f"Total de cultivos registrados: {total_cultivos}", styles['Normal'])
+            total_hoteles = len(hoteles)
+            resumen = Paragraph(f"Total de hoteles registrados: {total_hoteles}", styles['Normal'])
             elements.append(resumen)
 
             # Generar PDF
@@ -928,9 +931,5 @@ class CultivosView(BaseView):
         """Limpia el formulario y resetea validaciones"""
         super()._clear_form()
 
-        # Limpiar campo de foto
-        if hasattr(self, 'label_imagen'):
-            self.label_imagen.config(text="Sin imagen")
-
         # Enfocar el primer campo
-        self.focus_field('id_cultivo')
+        self.focus_field('id_hotel')
